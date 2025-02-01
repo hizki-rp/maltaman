@@ -1,10 +1,20 @@
 "use client"
 
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabaseClient';
 import { groupBy } from 'lodash';
 import UserTodoList from '../components/UserTodoList';
 import NewUserForm from '../components/NewUserForm';
+
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+	throw new Error('Supabase URL and Key are required');
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function Home() {
 	const [todosByUser, setTodosByUser] = useState<{ [key: string]: any[] }>({});
@@ -35,7 +45,7 @@ export default function Home() {
 			let applied = 0;
 			let granted = 0;
 			let denied = 0;
-			let pending = 0;
+			let pending = 2;
 
 			Object.values(groupedTodos).forEach((todos) => {
 				const hasApplied = todos.some((todo) => todo.task === 'Visa applied' && todo.is_completed);
@@ -45,10 +55,10 @@ export default function Home() {
 					applied++;
 					if (hasGranted) {
 						granted++;
-						pending--;
+						applied--;
 					} else {
 						denied++;
-						pending--;
+						applied--;
 					}
 				}
 			});
