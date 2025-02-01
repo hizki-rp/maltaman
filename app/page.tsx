@@ -8,10 +8,19 @@ import NewUserForm from '../components/NewUserForm';
 
 export default function Home() {
 	const [todosByUser, setTodosByUser] = useState<{ [key: string]: any[] }>({});
+
+	type VisaStats = {
+		granted: number;
+		pending: number;
+		denied: number;
+		applied: number; // Add this line
+	};
+
 	const [visaStats, setVisaStats] = useState({
 		granted: 0,
 		pending: 0,
 		denied: 0,
+		applied: 0,
 	});
 
 	const fetchTodos = async () => {
@@ -26,6 +35,7 @@ export default function Home() {
 			let applied = 0;
 			let granted = 0;
 			let denied = 0;
+			let pending = 0;
 
 			Object.values(groupedTodos).forEach((todos) => {
 				const hasApplied = todos.some((todo) => todo.task === 'Visa applied' && todo.is_completed);
@@ -35,13 +45,15 @@ export default function Home() {
 					applied++;
 					if (hasGranted) {
 						granted++;
+						pending--;
 					} else {
 						denied++;
+						pending--;
 					}
 				}
 			});
 
-			setVisaStats({ applied, granted, denied });
+			setVisaStats({ granted, pending, denied, applied });
 		}
 	};
 
@@ -66,6 +78,8 @@ export default function Home() {
 		} else {
 			fetchTodos(); // Refresh the list
 		}
+
+		
 	};
 
 	const toggleTodo = async (id: string, isCompleted: boolean, task: string, userName: string) => {
@@ -121,6 +135,10 @@ export default function Home() {
 			<p className="text-2xl font-bold mb-4">Visa Tracking!</p>
 		
 			<div className="flex gap-4 mb-6">
+				<div className="p-4 bg-blue-100 rounded-lg">
+					<h3 className="text-lg font-semibold">Pending</h3>
+					<p className="text-2xl">{visaStats.pending}</p>
+				</div>
 				<div className="p-4 bg-blue-100 rounded-lg">
 					<h3 className="text-lg font-semibold">Applied</h3>
 					<p className="text-2xl">{visaStats.applied}</p>
