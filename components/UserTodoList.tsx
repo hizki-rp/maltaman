@@ -1,20 +1,17 @@
 "use client"
+
 import { useState } from 'react';
-import { supabase } from "../lib/supabaseClient";
 
 export default function UserTodoList({
-    userName,
+    user,
     todos,
     toggleTodo,
 }: {
-    userName: string;
+    user: { id: string; name: string; country: string };
     todos: any[];
     toggleTodo: (id: string, isCompleted: boolean, task: string) => void;
 }) {
     const [isExpanded, setIsExpanded] = useState(false);
-
-    // Get the country from the first todo (since all todos for a user have the same country)
-    const country = todos[0]?.country || '';
 
     return (
         <div className="border rounded-lg p-4 bg-white shadow-sm">
@@ -23,7 +20,7 @@ export default function UserTodoList({
                 onClick={() => setIsExpanded(!isExpanded)}
             >
                 <h2 className="text-lg font-semibold">
-                    {userName} <span className="text-sm text-gray-500">({country})</span>
+                    {user.name} <span className="text-sm text-gray-500">({user.country})</span>
                 </h2>
                 <span className="text-gray-500">
                     {isExpanded ? '▼' : '▶'}
